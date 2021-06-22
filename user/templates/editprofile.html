@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <h3>Test App</h3>
+        <h4><a href="/success">Dashboard</a></h4>
+        <h4><a href="/editprofile">Profile</a></h4>
+        <a href="logout">Log off</a>
+        <hr>
+    </header>
+    <div>
+        <h3>Eidt user #{{user.id}}</h3>
+        <button><a href="/success">Return to Dashboard</a></button>
+    </div>
+    <div>
+        <form action="/edituser/{user.id]" method="POST">
+            <h4>Eidt Information</h4>
+            <h5>Email Address:</h5>
+            <input type="text" name="email">
+            <h5>First Name:</h5>
+            <input type="text" name="first_name">
+            <h5>Last Name:</h5>
+            <input type="text" name="last_name">
+
+            <!-- only admin can edit -->
+            {% if user.userlevel == 'Admin' %}
+            <h5>User Level:</h5>
+            <select name="user_level">
+                <option value="1">Admin</option>
+                <option value="0">Normal</option>
+            </select>
+            {% endif %}
+            <button>Save</button>
+        </form>
+    </div>
+    <div>
+        <form action="/editpassword" method="POST">
+            <h5>Enter the old password</h5>
+            <input type="text" name="oldpassword">
+            <h5>New Password:</h5>
+            <input type="text" name="password">
+            <h5>Password Confirmation:</h5>
+            <input type="text" name="password_confirm">
+            <button>Update Password</button>
+        </form>
+    </div>
+
+
+    <!-- normal can edit -->
+    {% if user.userlevel == 'Normal' %}
+    <div>
+        <form action="/editdesc" method="POST">
+            <h5>Edit Description:</h5>
+            <input type="text" name="desc">
+            <button>Save</button>
+        </form>
+    </div>
+    {% endif %}
+
+</body>
+
+</html>

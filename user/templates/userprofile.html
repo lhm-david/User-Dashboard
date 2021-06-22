@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <h3>Test App</h3>
+        <h4><a href="/success">Dashboard</a></h4>
+        <h4><a href="/editprofile">Profile</a></h4>
+        <a href="logout">Log off</a>
+        <hr>
+    </header>
+    <div>
+        <h3>{{request.session.user_id}}</h3>
+        <h3>{{user.first_name}} {{user.last_name}}</h3>
+        <h5>Registered at: {{user.created_at}}</h5>
+        <h5>User ID: #{{user.id}}</h5>
+        <h5>Email Address: {{user.email}}</h5>
+        <form action="/addmessage/{{user.id}}" method="POST">
+            {% csrf_token %}
+            <h3>Leave a message for {{user.first_name}}</h3>
+            <input type="text" name="message">
+            <button>Post</button>
+        </form>
+    </div>
+    <div class="message">
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div>
+        {% for message in all_messages %}
+        <p>{{message.poster.first_name}} {{message.created_at}}</p><br>
+        <p>{{message.message_content}}</p><br>
+        <a href="delete/{{message.id}}">Delete</a>
+        {% for comment in message.MessageComment.all %}
+        <ul>
+            <li>
+                <p>{{comment.poster}} wrote</p> 
+                <p>{{comment.created_at}}</p><br>
+                <p>{{comment.coment_content}}</p>
+            </li> 
+        </ul>
+        {% endfor %}
+        <form action="/userprofile/{{message.id}}/addcomment" method="POST">
+            <input type="text" name="comment">
+            <button>Post</button>
+        </form>
+        {% endfor %}
+    </div>
+</body>
+
+</html>
