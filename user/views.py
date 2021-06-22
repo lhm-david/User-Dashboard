@@ -107,33 +107,34 @@ def addmessage (request, user_id):
             Message.objects.create(message_content = request.POST['message'], poster = loginuser, created_for = user.id)
         return redirect (f'/userprofile/{user.id}')
 
-def addcomment (request, message_id):
+def addcomment (request, user_id,message_id):
+    user = User.objects.get(id = user_id)
     if request.method == 'POST':
-        user = User.objects.get(id = request.session['user_id'])
+        this_user = User.objects.get(id = request.session['user_id'])
         this_message = Message.objects.get(id = message_id)
         errors = Comment.objects.comment_validator(request.POST)
         if len(errors):
             for key, value in errors.items():
                     messages.error(request, value)
-        Comment.objects.create(comment_content = request.POST['comment'], formessage = this_message, poster = request.session['user_id'])
-        return redirect (f'/userprofile/{user.id}')
+        Comment.objects.create(comment_content = request.POST['comment'], formessage = this_message, poster = this_user)
+    return redirect (f'/userprofile/{user.id}')
 
 
-def edituserpage(request, user_id):
-    user = User.objects.get(id = user_id)
+def edituserpage(request):
+    user = User.objects.get(id = request.session['user_id'])
     context = {
         'user': user
     }
     return render (request, 'editprofile.html', context)
 
-def edituser (request, user_id):
+def edituser (request):
     if request.method == 'POST':
-        user = User.objects.get(id = user_id)
-        errors = User.objects.reg_validator(request.POST)
+        user = User.objects.get(id = request.session['user_id'])
+        errors = User.objects.update_user(request.POST)
         if len(errors):
             for key, value in errors.items():
                 messages.error(request, value)
-            return redirect (f'userprofile/{user.id}/edit')
+            return redirect ('/edituser')
         else:    
             user.first_name = request.POST['first_name']
             user.last_name = request.POST['last_name']
@@ -141,19 +142,20 @@ def edituser (request, user_id):
             user.save()
             return redirect(f'userprofile/{user.id}')
 
-def editpassword (request, user_id):
+def editpassword (request):
+    user = User.objects.get(id = request.session['user_id'])
     if request.method == 'POST':
-        user = User.objects.get(id = user_id)
+        
         errors = User.objects.password_change(request.POST)
         if len(errors):
             for key, value in errors.items():
                 messages.error(request, value)
-            return redirect (f'userprofile/{user.id}/edit')
+            return redirect ('/edituser')
         else:
             newpassword = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt()).decode()
             user.password = newpassword
             user.save()
-            return redirect ('logout')
+            return redirect ('/logout')
 
 def logout(request):
     request.session.flush()

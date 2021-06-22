@@ -12,7 +12,7 @@
     <header>
         <h3>Test App</h3>
         <h4><a href="/success">Dashboard</a></h4>
-        <h4><a href="/editprofile">Profile</a></h4>
+        <h4><a href="/edituser">Profile</a></h4>
         <a href="logout">Log off</a>
         <hr>
     </header>
@@ -46,13 +46,14 @@
         {% for comment in message.MessageComment.all %}
         <ul>
             <li>
-                <p>{{comment.poster}} wrote</p> 
-                <p>{{comment.created_at}}</p><br>
-                <p>{{comment.coment_content}}</p>
+                <p>{{comment.created_at}}</p>
+                <p>{{comment.poster.first_name}} wrote</p> <br>
+                <p>{{comment.comment_content}}</p>
             </li> 
         </ul>
         {% endfor %}
-        <form action="/userprofile/{{message.id}}/addcomment" method="POST">
+        <form action="/userprofile/{{user.id}}/{{message.id}}/addcomment" method="POST">
+            {% csrf_token %}
             <input type="text" name="comment">
             <button>Post</button>
         </form>

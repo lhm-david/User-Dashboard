@@ -13,15 +13,25 @@
         <h3>Test App</h3>
         <h4><a href="/success">Dashboard</a></h4>
         <h4><a href="/editprofile">Profile</a></h4>
-        <a href="logout">Log off</a>
+        <a href="/logout">Log off</a>
         <hr>
     </header>
     <div>
         <h3>Eidt user #{{user.id}}</h3>
         <button><a href="/success">Return to Dashboard</a></button>
     </div>
+    <div class="message">
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
     <div>
-        <form action="/edituser/{user.id]" method="POST">
+        <form action="/update" method="POST">
+            {% csrf_token %}
             <h4>Eidt Information</h4>
             <h5>Email Address:</h5>
             <input type="text" name="email">
@@ -43,6 +53,8 @@
     </div>
     <div>
         <form action="/editpassword" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{request.session.user_id}}">
             <h5>Enter the old password</h5>
             <input type="text" name="oldpassword">
             <h5>New Password:</h5>
