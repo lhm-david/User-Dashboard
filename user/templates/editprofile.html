@@ -30,7 +30,7 @@
         {% endif %}
     </div>
     <div>
-        <form action="/update" method="POST">
+        <form action="/update/{{user.id}}" method="POST">
             {% csrf_token %}
             <h4>Eidt Information</h4>
             <h5>Email Address:</h5>
@@ -39,17 +39,21 @@
             <input type="text" name="first_name">
             <h5>Last Name:</h5>
             <input type="text" name="last_name">
-
-            <!-- only admin can edit -->
-            {% if user.userlevel == 'Admin' %}
-            <h5>User Level:</h5>
-            <select name="user_level">
-                <option value="1">Admin</option>
-                <option value="0">Normal</option>
-            </select>
-            {% endif %}
             <button>Save</button>
         </form>
+        <!-- only admin can edit -->
+        <form action="/chageuserlevel/{{user.id}}" method="POST">
+            {% csrf_token %}
+            {% if loginuser.userlevel == 'Admin' %}
+            <h5>User Level:</h5>
+            <select name="user_level">
+                <option value="Admin">Admin</option>
+                <option value="Normal">Normal</option>
+            </select>
+            <button>Save</button>
+            {% endif %}
+        </form>
+
     </div>
     <div>
         <form action="/editpassword" method="POST">

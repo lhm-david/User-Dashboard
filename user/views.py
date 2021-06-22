@@ -34,8 +34,10 @@ def register (request):
             first_user = User.objects.get(id = 1)
             if new_user.id == first_user.id:
                 new_user.userlevel = 'Admin'
+                new_user.save()
             else:
                 new_user.userlevel = 'Normal'
+                new_user.save()
             return redirect('/success')
 
 def login(request):
@@ -58,8 +60,10 @@ def inpage(request):
         return redirect('/login')
     else:
         users = User.objects.all()
+        loginuser = User.objects.get(id = request.session['user_id'])
         context = {
-            'all_users': users
+            'all_users': users,
+            'loginuser':loginuser
         }
         return render (request, 'maindashboard.html', context)
 
@@ -120,27 +124,40 @@ def addcomment (request, user_id,message_id):
     return redirect (f'/userprofile/{user.id}')
 
 
-def edituserpage(request):
-    user = User.objects.get(id = request.session['user_id'])
-    context = {
-        'user': user
-    }
+def edituserpage(request, user_id):
+    loginuser = User.objects.get(id = request.session['user_id'])
+    if loginuser.userlevel == 'Normal':
+        context = {
+            'user': loginuser
+        }
+    else:
+        user = User.objects.get(id = user_id)
+        context = {
+            'user':user,
+            'loginuser':loginuser
+        }
     return render (request, 'editprofile.html', context)
 
-def edituser (request):
+def edituser (request, user_id):
     if request.method == 'POST':
-        user = User.objects.get(id = request.session['user_id'])
+        user = User.objects.get(id = user_id)
         errors = User.objects.update_user(request.POST)
         if len(errors):
             for key, value in errors.items():
                 messages.error(request, value)
-            return redirect ('/edituser')
+            return redirect (f'/edituser/{user.id}')
         else:    
             user.first_name = request.POST['first_name']
             user.last_name = request.POST['last_name']
             user.email = request.POST['email']
             user.save()
-            return redirect(f'userprofile/{user.id}')
+            return redirect(f'/userprofile/{user.id}')
+
+def userlevel (request, user_id):
+    user = User.objects.get(id = user_id)
+    user.userlevel = request.POST['user_level']
+    user.save()
+    return redirect ('/success')
 
 def editpassword (request):
     user = User.objects.get(id = request.session['user_id'])
@@ -161,8 +178,14 @@ def logout(request):
     request.session.flush()
     return redirect('/')
 
-def delete (request, id):
+def deleteMessage (request, id):
     remove = Message.objects.get(id = id)
     remove.delete()
+    return redirect('/success')
+
+def deleteUser (request, user_id):
+    if user_id != request.session['user_id']:
+        remove = User.objects.get(id = user_id)
+        remove.delete()
     return redirect('/success')
 

@@ -12,7 +12,7 @@
     <header>
         <h3>Test App</h3>
         <h4><a href="/success">Dashboard</a></h4>
-        <h4><a href="/edituser">Profile</a></h4>
+        <h4><a href="/edituser/{{user.id}}">Profile</a></h4>
         <a href="logout">Log off</a>
         <hr>
     </header>
@@ -22,12 +22,15 @@
         <h5>Registered at: {{user.created_at}}</h5>
         <h5>User ID: #{{user.id}}</h5>
         <h5>Email Address: {{user.email}}</h5>
+        <h5>Description: {{user.description}}</h5>
+        {% if user.id != request.session.user_id %}
         <form action="/addmessage/{{user.id}}" method="POST">
             {% csrf_token %}
             <h3>Leave a message for {{user.first_name}}</h3>
             <input type="text" name="message">
             <button>Post</button>
         </form>
+        {% endif %}
     </div>
     <div class="message">
         {% if messages %}
@@ -59,6 +62,7 @@
         </form>
         {% endfor %}
     </div>
+    
 </body>
 
 </html>
